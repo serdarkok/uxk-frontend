@@ -1,8 +1,6 @@
-"use client"
-
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-
+import { useState } from "react";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/Button"
 import { Calendar } from "@/components/ui/Calendar"
@@ -27,8 +25,10 @@ export function DatePicker({
   disabled = false,
   className,
 }: DatePickerProps) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
@@ -47,8 +47,11 @@ export function DatePicker({
         <Calendar
           mode="single"
           selected={date}
-          onSelect={onSelect}
-          initialFocus
+          onSelect={(selectedDate) => {
+            onSelect?.(selectedDate);
+            setOpen(false);
+          }}
+          defaultMonth={date}
         />
       </PopoverContent>
     </Popover>

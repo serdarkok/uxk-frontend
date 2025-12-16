@@ -79,6 +79,14 @@ export const columns: ColumnDef<IShip>[] = [
   {
     header: 'Ships Note',
     accessorKey: 'notes',
+    cell: ({ row }) => (
+      <span 
+        className="text-left line-clamp-1 max-w-[180px] block text-ellipsis overflow-hidden" 
+        title={row.original.notes || ''}
+      >
+        {row.original.notes || '-'}
+      </span>
+    ),
   },
   {
     header: 'Action',

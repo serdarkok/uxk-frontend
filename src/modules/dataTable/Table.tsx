@@ -92,7 +92,8 @@ export function DataTable<TData, TValue>({
       <DataTablePagination table={table} />
       <Drawer 
         open={isDrawerOpen} 
-        setOpen={(open) => dispatch(setDrawerOpen(open))} 
+        setOpen={(open) => dispatch(setDrawerOpen(open))}
+        isImmediate={true}
       />
     </div>
   )

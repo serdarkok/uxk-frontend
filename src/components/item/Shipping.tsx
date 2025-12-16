@@ -1,16 +1,43 @@
 import { DateInput } from "./DateInput";
 import { Textarea } from "../ui/Textarea";
 import type { IShip } from "@/types/ship";
+import { useEffect, useState } from "react";
 
 interface ShippingProps {
   selectedRow: IShip;
   setSelectedRow: (data: Partial<IShip>) => void;
+  isImmediate?: boolean;
 }
 
-export function Shipping({ selectedRow, setSelectedRow }: ShippingProps) {
+export function Shipping({ selectedRow, setSelectedRow, isImmediate = true }: ShippingProps) {
   const ordered = selectedRow.ordered ? new Date(selectedRow.ordered) : undefined;
   const shipped = selectedRow.shipped ? new Date(selectedRow.shipped) : undefined;
   const delivered = selectedRow.delivered ? new Date(selectedRow.delivered) : undefined;
+  
+  const [notes, setNotes] = useState(selectedRow.notes || '');
+
+  useEffect(() => {
+    setNotes(selectedRow.notes || '');
+  }, [selectedRow.id, selectedRow.notes]);
+
+  useEffect(() => {
+    if (!isImmediate) return;
+    
+    const timer = setTimeout(() => {
+      if (notes !== selectedRow.notes) {
+        setSelectedRow({ notes });
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [notes, isImmediate]);
+
+  const handleNotesChange = (value: string) => {
+    setNotes(value);
+    if (!isImmediate) {
+      setSelectedRow({ notes: value });
+    }
+  };
 
   return (
     <>
@@ -41,8 +68,8 @@ export function Shipping({ selectedRow, setSelectedRow }: ShippingProps) {
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium">Shipping Notes</label>
         <Textarea
-          value={selectedRow.notes || ''}
-          onChange={(e) => setSelectedRow({ notes: e.target.value })}
+          value={notes}
+          onChange={(e) => handleNotesChange(e.target.value)}
           placeholder="Enter shipping notes..."
           className="min-h-24"
         />

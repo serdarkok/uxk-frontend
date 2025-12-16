@@ -11,16 +11,37 @@ import { Planning } from "@/components/item/Planning";
 import { Production } from "@/components/item/Production";
 import { Shipping } from "@/components/item/Shipping";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { selectSelectedShip, updateSelectedShip, clearSelectedShip } from "@/store/slices/selectedShipSlice";
+import { selectSelectedShip, updateSelectedShip } from "@/store/slices/selectedShipSlice";
 import { useUpdateShipMutation } from "@/store/api/shipsApi";
 import type { IShip } from "@/types/ship";
 
-export function Drawer({ open, setOpen }: { open: boolean, setOpen: (open: boolean) => void }) {
+interface DrawerProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  isImmediate?: boolean;
+}
+
+export function Drawer({ open, setOpen, isImmediate = true }: DrawerProps) {
   const dispatch = useAppDispatch();
   const selectedRow = useAppSelector(selectSelectedShip);
   const [updateShip, { isLoading }] = useUpdateShipMutation();
 
   if (!selectedRow) return null;
+
+  const handleImmediateUpdate = async (updatedData: Partial<IShip>) => {
+    try {
+      dispatch(updateSelectedShip(updatedData));
+      
+      if (isImmediate) {
+        await updateShip({
+          id: selectedRow.id,
+          data: updatedData,
+        }).unwrap();
+      }
+    } catch (error) {
+      console.error('Failed to update ship:', error);
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -40,7 +61,6 @@ export function Drawer({ open, setOpen }: { open: boolean, setOpen: (open: boole
         },
       }).unwrap();
       setOpen(false);
-      dispatch(clearSelectedShip());
     } catch (error) {
       console.error('Failed to update ship:', error);
     }
@@ -48,7 +68,6 @@ export function Drawer({ open, setOpen }: { open: boolean, setOpen: (open: boole
 
   const handleCancel = () => {
     setOpen(false);
-    dispatch(clearSelectedShip());
   };
 
 
@@ -59,7 +78,9 @@ export function Drawer({ open, setOpen }: { open: boolean, setOpen: (open: boole
           <SheetTitle asChild>
             <div className="flex items-center gap-2">
               <h4>Item #{selectedRow?.itemId} - {selectedRow?.item?.name}</h4>
-              <Button variant="link" className="underline">Edit</Button>
+              {isImmediate && isLoading && (
+                <span className="text-sm text-muted-foreground animate-pulse">Saving...</span>
+              )}
             </div>
           </SheetTitle>
         </SheetHeader>
@@ -71,7 +92,7 @@ export function Drawer({ open, setOpen }: { open: boolean, setOpen: (open: boole
             <h5 className="text-lg font-bold">Planning & Requirements</h5>
             <Planning 
               selectedRow={selectedRow} 
-              setSelectedRow={(updatedData: Partial<IShip>) => dispatch(updateSelectedShip(updatedData))} 
+              setSelectedRow={handleImmediateUpdate}
             />
           </div>
 
@@ -79,27 +100,31 @@ export function Drawer({ open, setOpen }: { open: boolean, setOpen: (open: boole
             <h5 className="text-lg font-bold">Production & Shop</h5>
             <Production 
               selectedRow={selectedRow} 
-              setSelectedRow={(updatedData: Partial<IShip>) => dispatch(updateSelectedShip(updatedData))} 
+              setSelectedRow={handleImmediateUpdate}
             />
           </div>
 
-          {/* Section 4 - Shipping */}
           <div className="flex flex-col gap-6 bg-white dark:bg-gray-800 mx-3 p-6 rounded-md">
             <h5 className="text-lg font-bold">Shipping</h5>
             <Shipping 
               selectedRow={selectedRow} 
-              setSelectedRow={(updatedData: Partial<IShip>) => dispatch(updateSelectedShip(updatedData))} 
+              setSelectedRow={handleImmediateUpdate}
+              isImmediate={isImmediate}
             />
           </div>
         </div>
 
         <SheetFooter>
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? 'Saving...' : 'Save Changes'}
-          </Button>
+          {!isImmediate && (
+            <>
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={isLoading}>
+                {isLoading ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </>
+          )}
         </SheetFooter>
       </SheetContent>
     </Sheet>

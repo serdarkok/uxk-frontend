@@ -6,6 +6,7 @@ export function DateInput({ label, value, setValue }: { label: string,value: Dat
       <label className="text-sm font-medium">{ label }</label>
       <DatePicker
         date={value}
+        className="h-12"
         onSelect={setValue}
         placeholder="Select date"
       />
