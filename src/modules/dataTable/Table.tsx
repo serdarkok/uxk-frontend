@@ -13,30 +13,42 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { DataTablePagination } from "./Pagination"
+} from "@/components/ui/Table"
+import { DataTablePagination } from "./Pagination";
+import { Drawer } from "./Drawer";
+import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  selectedRow: TData | null
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [open, setOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<TData | null>(null);
+
   const table = useReactTable({
     data,
     columns,
     getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
-  })
+    meta: {
+      openSheet: (rowData: TData) => {
+        setSelectedRow(rowData);
+        setOpen(true);
+      }
+    }
+  });
 
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="overflow-hidden rounded-md border w-full">
         <Table>
-          <TableHeader className="dark:bg-gray-700 bg-gray-100">
+          <TableHeader className="dark:bg-stone-900 bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -79,6 +91,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
+      <Drawer open={open} setOpen={setOpen} selectedRow={selectedRow} />
     </div>
   )
 }

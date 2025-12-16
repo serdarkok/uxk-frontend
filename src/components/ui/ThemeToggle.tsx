@@ -11,10 +11,7 @@ export function ModeToggle({ className }: { className?: string }) {
       variant="outline"
       size="icon"
       onClick={() => {
-        // Toggle between 'light' and 'dark'
-        // If current theme is 'dark', switch to 'light'; otherwise switch to 'dark'
         const newTheme = document.documentElement.classList.contains("dark") ? "light" : "dark";
-        console.log(newTheme);
         setTheme(newTheme);
       }}
     >

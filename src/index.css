@@ -187,3 +187,8 @@ h5 {
     @apply bg-background text-foreground;
   }
 }
+
+.table-bordered tr td:not(:first-child):nth-child(n),
+.table-bordered tr th:not(:first-child):nth-child(n) {
+  @apply text-sm font-medium border-l border-gray-200 dark:border-gray-600;
+}

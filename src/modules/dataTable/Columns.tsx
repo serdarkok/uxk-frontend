@@ -1,51 +1,8 @@
 import { Button } from "@/components/ui/Button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/Checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatCurrency } from "@/lib/utils";
-
-export type IShip = {
-  id: number;
-  itemId: number;
-  shipToTitle: string;
-  shipToAddress: string;
-  shipFrom: string;
-  vendorId: number;
-  quantity: number;
-  phase: number;
-  notes: string;
-  locationId: number;
-  categoryId: number;
-  poApproval: string | null;
-  hotelNeedBy: string | null;
-  exceptedDelivery: string | null;
-  shopsSend: string | null;
-  shopsApproved: string | null;
-  shopsDelivered: string | null;
-  ordered: string | null;
-  shipped: string | null;
-  delivered: string | null;
-  status: boolean;
-  createdAt: string;
-  updatedAt: string;
-  item: {
-    id: number;
-    name: string;
-    spec: string;
-    price: number;
-  };
-  location: {
-    id: number;
-    name: string;
-  };
-  category: {
-    id: number;
-    name: string;
-  };
-  vendor: {
-    id: number;
-    name: string;
-  };
-}
+import type { IShip } from "@/types/ship";
 
 export const columns: ColumnDef<IShip>[] = [
   {
@@ -81,6 +38,17 @@ export const columns: ColumnDef<IShip>[] = [
   {
     header: 'Item Name',
     accessorKey: 'item.name',
+    cell: ({ row, table }) => (
+      <span 
+        className="text-left cursor-pointer text-red-700 hover:underline"
+        onClick={() => {
+          // @ts-ignore - Custom meta method
+          table.options.meta?.openSheet(row.original);
+        }}
+      >
+        {row.original.item.name}
+      </span>
+    ),
   },
   {
     header: 'Vendor',
@@ -98,7 +66,7 @@ export const columns: ColumnDef<IShip>[] = [
     header: 'Phase',
     accessorKey: 'phase',
     cell: ({ row }) => (
-      <div className="text-center w-10 h-10 flex items-center justify-center italic font-medium bg-gray-200 dark:bg-gray-700 rounded-md">{ row.original.phase < 10 && '0' }{row.original.phase}</div>
+      <div className="text-center w-10 h-10 flex items-center justify-center italic font-medium bg-gray-200 dark:bg-stone-900 rounded-md">{ row.original.phase < 10 && '0' }{row.original.phase}</div>
     ),
   },
   {
