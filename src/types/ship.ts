@@ -1,7 +1,3 @@
-/**
- * Ship Types
- */
-
 export type IShip = {
   id: number;
   itemId: number;
@@ -49,13 +45,49 @@ export type IShip = {
 }
 
 export interface CreateShipDto {
-  name: string;
-  // Add other required fields
+  itemId: number;
+  shipToTitle: string;
+  shipToAddress: string;
+  shipFrom: string;
+  vendorId: number;
+  quantity: number;
+  phase: number;
+  notes?: string;
+  locationId: number;
+  categoryId: number;
+  poApproval?: string | null;
+  hotelNeedBy?: string | null;
+  exceptedDelivery?: string | null;
+  shopsSend?: string | null;
+  shopsApproved?: string | null;
+  shopsDelivered?: string | null;
+  ordered?: string | null;
+  shipped?: string | null;
+  delivered?: string | null;
+  status?: boolean;
 }
 
 export interface UpdateShipDto {
-  name?: string;
-  // Add other fields that can be updated
+  itemId?: number;
+  shipToTitle?: string;
+  shipToAddress?: string;
+  shipFrom?: string;
+  vendorId?: number;
+  quantity?: number;
+  phase?: number;
+  notes?: string;
+  locationId?: number;
+  categoryId?: number;
+  poApproval?: string | null;
+  hotelNeedBy?: string | null;
+  exceptedDelivery?: string | null;
+  shopsSend?: string | null;
+  shopsApproved?: string | null;
+  shopsDelivered?: string | null;
+  ordered?: string | null;
+  shipped?: string | null;
+  delivered?: string | null;
+  status?: boolean;
 }
 
 export interface BulkUpdateShipDto {

@@ -16,20 +16,20 @@ import {
 } from "@/components/ui/Table"
 import { DataTablePagination } from "./Pagination";
 import { Drawer } from "./Drawer";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setSelectedShip, selectIsDrawerOpen, setDrawerOpen } from "@/store/slices/selectedShipSlice";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  selectedRow: TData | null
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [open, setOpen] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<TData | null>(null);
+  const dispatch = useAppDispatch();
+  const isDrawerOpen = useAppSelector(selectIsDrawerOpen);
 
   const table = useReactTable({
     data,
@@ -38,8 +38,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     meta: {
       openSheet: (rowData: TData) => {
-        setSelectedRow(rowData);
-        setOpen(true);
+        dispatch(setSelectedShip(rowData as any));
       }
     }
   });
@@ -91,7 +90,10 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <Drawer open={open} setOpen={setOpen} selectedRow={selectedRow} />
+      <Drawer 
+        open={isDrawerOpen} 
+        setOpen={(open) => dispatch(setDrawerOpen(open))} 
+      />
     </div>
   )
 }

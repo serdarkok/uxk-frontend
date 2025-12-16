@@ -1,31 +1,40 @@
-import { useEffect, useState } from 'react';
 import { ThemeProvider } from '@/components/provider/ThemeProvider';
 import { ModeToggle } from '@/components/ui/ThemeToggle';
 import { SearchInput } from '@/modules/items/SearchInput';
 import { SelectInput } from '@/modules/items/SelectInput';
 import csvDownload from '@/assets/svg/csv-download.svg';
-import { shipService } from '@/services/ships.service';
 import { DataTable } from '@/modules/dataTable/Table';
-import { columns, type IShip } from '@/modules/dataTable/Columns';
+import { columns } from '@/modules/dataTable/Columns';
+import { useGetAllShipsQuery } from '@/store/api/shipsApi';
 import './App.css';
 
 function App() {
-  const [ships, setShips] = useState<IShip[]>([]);
+  const { data: ships = [], isLoading, error } = useGetAllShipsQuery();
 
   const phase = Array.from({ length: 99 }, (_, i) => ({
     value: i + 1,
     name: i + 1,
   }));
 
-  useEffect(() => {
-    const fetchShips = async () => {
-      const result = await shipService.getAll();
-      setShips(result);
-    };
-    fetchShips();
-  }, []);
+  if (isLoading) {
+    return (
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <div className="flex items-center justify-center h-screen">
+          <p>Loading ships...</p>
+        </div>
+      </ThemeProvider>
+    );
+  }
 
-  console.log(ships);
+  if (error) {
+    return (
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-red-600">Error loading ships</p>
+        </div>
+      </ThemeProvider>
+    );
+  }
 
   const vendor = [
     { value: 1, name: 'ABC Supplies Co.' },
