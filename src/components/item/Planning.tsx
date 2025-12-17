@@ -2,7 +2,7 @@ import { DateInput } from "./DateInput";
 import type { IShip } from "@/types/ship";
 
 interface PlanningProps {
-  selectedRow: IShip;
+  selectedRow: Pick<IShip, 'poApproval' | 'hotelNeedBy' | 'exceptedDelivery'>;
   setSelectedRow: (data: Partial<IShip>) => void;
 }
 

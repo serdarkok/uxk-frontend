@@ -18,7 +18,7 @@ import {
 import { DataTablePagination } from "./Pagination";
 import { Drawer } from "./Drawer";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setSelectedShip, selectIsDrawerOpen, setDrawerOpen, setSelectedRows } from "@/store/slices/selectedShipSlice";
+import { setSelectedShip, selectIsDrawerOpen, setDrawerOpen, setSelectedRows, clearSelectedRows } from "@/store/slices/selectedShipSlice";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -54,6 +54,14 @@ export function DataTable<TData, TValue>({
     const selectedRowsData = table.getFilteredSelectedRowModel().rows.map(row => row.original);
     dispatch(setSelectedRows(selectedRowsData as any));
   }, [rowSelection, dispatch, table]);
+
+  // UX Sorunu oluşturur
+  // useEffect(() => {
+  //   if(!isDrawerOpen) {
+  //     dispatch(clearSelectedRows());
+  //     setRowSelection({});
+  //   }
+  // }, [isDrawerOpen]);
 
   return (
     <div className="flex flex-col gap-2 w-full">

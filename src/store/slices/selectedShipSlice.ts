@@ -45,6 +45,13 @@ export const selectedShipSlice = createSlice({
         state.selectedShip = null;
       }
     },
+    setDrawerType: (state, action: PayloadAction<'single' | 'bulk' | 'updateTracking'>) => {
+      state.drawerType = action.payload;
+      state.isDrawerOpen = true;
+      if (action.payload === 'single' && state.selectedShip) {
+        state.selectedShip = null;
+      }
+    },
     setSelectedRows: (state, action: PayloadAction<IShip[]>) => {
       state.selectedRows = action.payload;
     },
@@ -59,6 +66,7 @@ export const selectedShipSlice = createSlice({
     },
     clearSelectedRows: (state) => {
       state.selectedRows = [];
+      state.isDrawerOpen = false;
     },
   },
 });
@@ -68,6 +76,7 @@ export const {
   updateSelectedShip,
   clearSelectedShip,
   setDrawerOpen,
+  setDrawerType,
   setSelectedRows,
   addSelectedRow,
   removeSelectedRow,

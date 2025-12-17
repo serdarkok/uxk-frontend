@@ -91,8 +91,6 @@ export interface UpdateShipDto {
 }
 
 export interface BulkUpdateShipDto {
-  ships: Array<{
-    id: number;
-    [key: string]: any;
-  }>;
+  ids: number[];
+  [key: string]: any;
 }

@@ -1,6 +1,7 @@
 import { Select, SelectContent, SelectTrigger, SelectValue, SelectGroup, SelectItem } from '@/components/ui/Select';
 import { X } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 type IValue = {
   value: string | number;
@@ -11,6 +12,7 @@ interface IProps {
   values: IValue[];
   label: string;
   className?: string;
+  setValue: (value: string) => void;
 }
 
 export function SelectInput(props: IProps) {
@@ -19,12 +21,18 @@ export function SelectInput(props: IProps) {
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedValue('');
+    props.setValue('');
+  };
+
+  const handleValueChange = (value: string) => {
+    setSelectedValue(value);
+    props.setValue(value);
   };
 
   return (
     <div className="relative inline-block">
-      <Select value={selectedValue} onValueChange={setSelectedValue}>
-        <SelectTrigger className="w-[180px]" size="lg">
+      <Select value={selectedValue} onValueChange={handleValueChange}>
+        <SelectTrigger className={cn("w-[180px]", props?.className)} size="lg">
           <SelectValue placeholder={props?.label} />
         </SelectTrigger>
         <SelectContent position="popper">

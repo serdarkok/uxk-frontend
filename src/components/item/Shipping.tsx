@@ -4,7 +4,7 @@ import type { IShip } from "@/types/ship";
 import { useEffect, useState } from "react";
 
 interface ShippingProps {
-  selectedRow: IShip;
+  selectedRow: Pick<IShip, 'ordered' | 'shipped' | 'delivered' | 'notes'>;
   setSelectedRow: (data: Partial<IShip>) => void;
   isImmediate?: boolean;
 }
@@ -18,7 +18,7 @@ export function Shipping({ selectedRow, setSelectedRow, isImmediate = true }: Sh
 
   useEffect(() => {
     setNotes(selectedRow.notes || '');
-  }, [selectedRow.id, selectedRow.notes]);
+  }, [selectedRow.notes]);
 
   useEffect(() => {
     if (!isImmediate) return;
