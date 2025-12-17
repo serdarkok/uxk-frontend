@@ -4,11 +4,15 @@ import type { RootState } from '../store';
 
 interface SelectedShipState {
   selectedShip: IShip | null;
+  selectedRows: IShip[];
+  drawerType: 'single' | 'bulk' | 'updateTracking';
   isDrawerOpen: boolean;
 }
 
 const initialState: SelectedShipState = {
   selectedShip: null,
+  selectedRows: [],
+  drawerType: 'single',
   isDrawerOpen: false,
 };
 
@@ -20,6 +24,7 @@ export const selectedShipSlice = createSlice({
       state.selectedShip = action.payload;
       if (action.payload) {
         state.isDrawerOpen = true;
+        state.drawerType = 'single';
       }
     },
     updateSelectedShip: (state, action: PayloadAction<Partial<IShip>>) => {
@@ -40,6 +45,21 @@ export const selectedShipSlice = createSlice({
         state.selectedShip = null;
       }
     },
+    setSelectedRows: (state, action: PayloadAction<IShip[]>) => {
+      state.selectedRows = action.payload;
+    },
+    addSelectedRow: (state, action: PayloadAction<IShip>) => {
+      const exists = state.selectedRows.find(row => row.id === action.payload.id);
+      if (!exists) {
+        state.selectedRows.push(action.payload);
+      }
+    },
+    removeSelectedRow: (state, action: PayloadAction<number>) => {
+      state.selectedRows = state.selectedRows.filter(row => row.id !== action.payload);
+    },
+    clearSelectedRows: (state) => {
+      state.selectedRows = [];
+    },
   },
 });
 
@@ -48,10 +68,16 @@ export const {
   updateSelectedShip,
   clearSelectedShip,
   setDrawerOpen,
+  setSelectedRows,
+  addSelectedRow,
+  removeSelectedRow,
+  clearSelectedRows,
 } = selectedShipSlice.actions;
 
 // Selectors
 export const selectSelectedShip = (state: RootState) => state.selectedShip.selectedShip;
+export const selectDrawerType = (state: RootState) => state.selectedShip.drawerType;
 export const selectIsDrawerOpen = (state: RootState) => state.selectedShip.isDrawerOpen;
+export const selectSelectedRows = (state: RootState) => state.selectedShip.selectedRows;
 
 export default selectedShipSlice.reducer;

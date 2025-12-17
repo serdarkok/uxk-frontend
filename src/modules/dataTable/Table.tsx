@@ -5,6 +5,7 @@ import {
   useReactTable,
   getPaginationRowModel
 } from "@tanstack/react-table"
+import { useEffect, useState } from "react";
 
 import {
   Table,
@@ -17,7 +18,7 @@ import {
 import { DataTablePagination } from "./Pagination";
 import { Drawer } from "./Drawer";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setSelectedShip, selectIsDrawerOpen, setDrawerOpen } from "@/store/slices/selectedShipSlice";
+import { setSelectedShip, selectIsDrawerOpen, setDrawerOpen, setSelectedRows } from "@/store/slices/selectedShipSlice";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -30,18 +31,29 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const dispatch = useAppDispatch();
   const isDrawerOpen = useAppSelector(selectIsDrawerOpen);
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
     columns,
-    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      rowSelection,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     meta: {
       openSheet: (rowData: TData) => {
         dispatch(setSelectedShip(rowData as any));
       }
     }
   });
+
+  useEffect(() => {
+    const selectedRowsData = table.getFilteredSelectedRowModel().rows.map(row => row.original);
+    dispatch(setSelectedRows(selectedRowsData as any));
+  }, [rowSelection, dispatch, table]);
 
   return (
     <div className="flex flex-col gap-2 w-full">

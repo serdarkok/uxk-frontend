@@ -6,10 +6,15 @@ import csvDownload from '@/assets/svg/csv-download.svg';
 import { DataTable } from '@/modules/dataTable/Table';
 import { columns } from '@/modules/dataTable/Columns';
 import { useGetAllShipsQuery } from '@/store/api/shipsApi';
+import { Toaster } from '@/components/ui/Sonner';
+import { useAppSelector } from '@/store/hooks';
+import { selectSelectedRows } from '@/store/slices/selectedShipSlice';
+import { SelectedRows } from '@/modules/items/SelectedRows';
 import './App.css';
 
 function App() {
   const { data: ships = [], isLoading, error } = useGetAllShipsQuery();
+  const selectedRows = useAppSelector(selectSelectedRows);
 
   const phase = Array.from({ length: 99 }, (_, i) => ({
     value: i + 1,
@@ -53,17 +58,21 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <ModeToggle className='absolute top-5 right-5' />
       <div className='flex flex-col gap-2 w-full items-start justify-between mt-4'>
-        <h3 className='font-medium'>Items</h3>
+        <div className='flex items-center justify-between w-full'>
+          <h3 className='font-medium'>Items</h3>
+        </div>
         <div className='flex w-full items-left justify-left gap-2'>
           <SearchInput className='w-[658px]' />
           <SelectInput values={phase} label="Phase" />
           <SelectInput values={vendor} label="Vendor" />
           <img src={csvDownload} className='cursor-pointer' alt="csv-download" />
         </div>
+          {selectedRows.length > 0 && ( <SelectedRows selectedRows={selectedRows} /> )}
         <div className='w-full flex flex-col items-start justify-start'>
           <DataTable columns={columns} data={ships} />
         </div>
       </div>
+      <Toaster />
     </ThemeProvider>
   )
 }
