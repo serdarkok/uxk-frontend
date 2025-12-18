@@ -18,7 +18,7 @@ import {
 import { DataTablePagination } from "./Pagination";
 import { Drawer } from "./Drawer";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setSelectedShip, selectIsDrawerOpen, setDrawerOpen, setSelectedRows, clearSelectedRows } from "@/store/slices/selectedShipSlice";
+import { setSelectedShip, selectIsDrawerOpen, setDrawerOpen, setSelectedRows } from "@/store/slices/selectedShipSlice";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
