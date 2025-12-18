@@ -11,7 +11,7 @@ interface DrawerProps {
   isImmediate?: boolean;
 }
 
-export function Drawer({ open, setOpen, isImmediate = true }: DrawerProps) {
+export function Drawer({ open, setOpen }: DrawerProps) {
   const selectedRow = useAppSelector(selectSelectedShip);
   const selectedRows = useAppSelector(selectSelectedRows);
   const drawerType = useAppSelector(selectDrawerType);

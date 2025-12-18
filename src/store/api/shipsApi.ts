@@ -25,7 +25,7 @@ export const shipsApi = baseApi.injectEndpoints({
     // Get ship by ID
     getShipById: builder.query<IShip, number>({
       query: (id) => `/ships/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Ship', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Ship', id }],
     }),
 
     // Get ships by item ID
@@ -63,7 +63,7 @@ export const shipsApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
+      invalidatesTags: (_result, _error, { id }) => [
         { type: 'Ship', id },
         'Ships',
       ],
@@ -85,7 +85,7 @@ export const shipsApi = baseApi.injectEndpoints({
         url: `/ships/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (_result, _error, id) => [
         { type: 'Ship', id },
         'Ships',
       ],

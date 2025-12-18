@@ -18,7 +18,7 @@ export function Single() {
   const dispatch = useAppDispatch();
   const selectedRow = useAppSelector(selectSelectedShip);
   if (!selectedRow) return null;
-  const [updateShip, { isLoading }] = useUpdateShipMutation();
+  const [updateShip] = useUpdateShipMutation();
   const handleImmediateUpdate = async (updatedData: Partial<IShip>) => {
     try {
       dispatch(updateSelectedShip(updatedData));      

@@ -3,6 +3,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatCurrency } from "@/lib/utils";
 import type { IShip } from "@/types/ship";
+import type { CheckedState } from "@radix-ui/react-checkbox";
 
 export const columns: ColumnDef<IShip>[] = [
   {
@@ -13,14 +14,14 @@ export const columns: ColumnDef<IShip>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value: CheckedState) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onCheckedChange={(value: CheckedState) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
     ),
