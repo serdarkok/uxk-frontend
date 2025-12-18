@@ -2,6 +2,7 @@ import { DateInput } from "./DateInput";
 import { Textarea } from "../ui/Textarea";
 import type { IShip } from "@/types/ship";
 import { useEffect, useState } from "react";
+import { utcStringToLocalDate, parseInputDateToUTC } from "@/lib/date";
 
 interface ShippingProps {
   selectedRow: Pick<IShip, 'ordered' | 'shipped' | 'delivered' | 'notes'>;
@@ -10,9 +11,9 @@ interface ShippingProps {
 }
 
 export function Shipping({ selectedRow, setSelectedRow, isImmediate = true }: ShippingProps) {
-  const ordered = selectedRow.ordered ? new Date(selectedRow.ordered) : undefined;
-  const shipped = selectedRow.shipped ? new Date(selectedRow.shipped) : undefined;
-  const delivered = selectedRow.delivered ? new Date(selectedRow.delivered) : undefined;
+  const ordered = utcStringToLocalDate(selectedRow.ordered);
+  const shipped = utcStringToLocalDate(selectedRow.shipped);
+  const delivered = utcStringToLocalDate(selectedRow.delivered);
   
   const [notes, setNotes] = useState(selectedRow.notes || '');
 
@@ -46,21 +47,21 @@ export function Shipping({ selectedRow, setSelectedRow, isImmediate = true }: Sh
           <DateInput 
             label="Ordered Date" 
             value={ordered} 
-            setValue={(date) => setSelectedRow({ ordered: date?.toISOString() || null })} 
+            setValue={(date) => setSelectedRow({ ordered: parseInputDateToUTC(date) })} 
           />
         </div>
         <div className="flex flex-col gap-2">
           <DateInput 
             label="Shipped Date" 
             value={shipped} 
-            setValue={(date) => setSelectedRow({ shipped: date?.toISOString() || null })} 
+            setValue={(date) => setSelectedRow({ shipped: parseInputDateToUTC(date) })} 
           />
         </div>
         <div className="flex flex-col gap-2">
           <DateInput 
             label="Delivered Date" 
             value={delivered} 
-            setValue={(date) => setSelectedRow({ delivered: date?.toISOString() || null })} 
+            setValue={(date) => setSelectedRow({ delivered: parseInputDateToUTC(date) })} 
           />
         </div>
       </div>

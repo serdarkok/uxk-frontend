@@ -1,5 +1,6 @@
 import { DateInput } from "./DateInput";
 import type { IShip } from "@/types/ship";
+import { utcStringToLocalDate, parseInputDateToUTC, daysDiff } from "@/lib/date";
 
 interface PlanningProps {
   selectedRow: Pick<IShip, 'poApproval' | 'hotelNeedBy' | 'exceptedDelivery'>;
@@ -7,14 +8,14 @@ interface PlanningProps {
 }
 
 export function Planning({ selectedRow, setSelectedRow }: PlanningProps) {
-  const poApproval = selectedRow.poApproval ? new Date(selectedRow.poApproval) : undefined;
-  const hotelNeedBy = selectedRow.hotelNeedBy ? new Date(selectedRow.hotelNeedBy) : undefined;
-  const expectedDelivery = selectedRow.exceptedDelivery ? new Date(selectedRow.exceptedDelivery) : undefined;
+  // Convert UTC strings from database to Date objects for DatePicker
+  const poApproval = utcStringToLocalDate(selectedRow.poApproval);
+  const hotelNeedBy = utcStringToLocalDate(selectedRow.hotelNeedBy);
+  const expectedDelivery = utcStringToLocalDate(selectedRow.exceptedDelivery);
 
   const calculateDaysLate = () => {
-    if (!hotelNeedBy || !expectedDelivery) return null;
-    const diff = expectedDelivery.getTime() - hotelNeedBy.getTime();
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    if (!selectedRow.hotelNeedBy || !selectedRow.exceptedDelivery) return null;
+    const days = daysDiff(selectedRow.hotelNeedBy, selectedRow.exceptedDelivery);
     return days > 0 ? days : null;
   };
 
@@ -26,21 +27,21 @@ export function Planning({ selectedRow, setSelectedRow }: PlanningProps) {
         <DateInput 
           label="PO Approval Date" 
           value={poApproval} 
-          setValue={(date) => setSelectedRow({ poApproval: date?.toISOString() || null })} 
+          setValue={(date) => setSelectedRow({ poApproval: parseInputDateToUTC(date) })} 
         />
       </div>
       <div className="flex flex-col gap-2">
         <DateInput 
           label="Hotel Need by Date" 
           value={hotelNeedBy} 
-          setValue={(date) => setSelectedRow({ hotelNeedBy: date?.toISOString() || null })} 
+          setValue={(date) => setSelectedRow({ hotelNeedBy: parseInputDateToUTC(date) })} 
         />
       </div>
       <div className="flex flex-col gap-2">
         <DateInput 
           label="Expected Delivery" 
           value={expectedDelivery} 
-          setValue={(date) => setSelectedRow({ exceptedDelivery: date?.toISOString() || null })} 
+          setValue={(date) => setSelectedRow({ exceptedDelivery: parseInputDateToUTC(date) })} 
         />
         {daysLate && (
           <p className="text-sm text-red-600 dark:text-red-400">
