@@ -5,16 +5,37 @@ import { SelectInput } from '@/modules/items/SelectInput';
 import csvDownload from '@/assets/svg/csv-download.svg';
 import { DataTable } from '@/modules/dataTable/Table';
 import { columns } from '@/modules/dataTable/Columns';
-import { useGetAllShipsQuery } from '@/store/api/shipsApi';
+import { useGetAllShipsQuery, useSearchShipsQuery } from '@/store/api/shipsApi';
 import { Toaster } from '@/components/ui/Sonner';
 import { useAppSelector } from '@/store/hooks';
 import { selectSelectedRows } from '@/store/slices/selectedShipSlice';
 import { SelectedRows } from '@/modules/items/SelectedRows';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const { data: ships = [], isLoading, error } = useGetAllShipsQuery();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const selectedRows = useAppSelector(selectSelectedRows);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const { data: searchResults, isLoading: isSearching } = useSearchShipsQuery(debouncedQuery, {
+    skip: !debouncedQuery,
+  });
+
+  const { data: allShips, isLoading: isLoadingAll, error } = useGetAllShipsQuery(undefined, {
+    skip: !!debouncedQuery,
+  });
+
+  const ships = (debouncedQuery ? searchResults : allShips) || [];
+  const isLoading = debouncedQuery ? isSearching : isLoadingAll;
 
   const phase = Array.from({ length: 99 }, (_, i) => ({
     value: i + 1,
@@ -62,9 +83,13 @@ function App() {
           <h3 className='font-medium'>Items</h3>
         </div>
         <div className='flex w-full items-left justify-left gap-2'>
-          <SearchInput className='w-[658px]' />
-          <SelectInput values={phase} label="Phase" />
-          <SelectInput values={vendor} label="Vendor" />
+          <SearchInput 
+            className='w-[658px]' 
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
+          <SelectInput values={phase} label="Phase" setValue={() => {}} />
+          <SelectInput values={vendor} label="Vendor" setValue={() => {}} />
           <img src={csvDownload} className='cursor-pointer' alt="csv-download" />
         </div>
           {selectedRows.length > 0 && ( <SelectedRows selectedRows={selectedRows} /> )}

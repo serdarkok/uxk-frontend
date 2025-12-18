@@ -16,6 +16,12 @@ export const shipsApi = baseApi.injectEndpoints({
       providesTags: ['Ships'],
     }),
 
+    // Search ships by item name, spec
+    searchShips: builder.query<IShip[], string>({
+      query: (searchQuery) => `/ships/search?q=${encodeURIComponent(searchQuery)}`,
+      providesTags: ['Ships'],
+    }),
+
     // Get ship by ID
     getShipById: builder.query<IShip, number>({
       query: (id) => `/ships/${id}`,
@@ -90,6 +96,7 @@ export const shipsApi = baseApi.injectEndpoints({
 export const {
   useGetAllShipsQuery,
   useGetActiveShipsQuery,
+  useSearchShipsQuery,
   useGetShipByIdQuery,
   useGetShipsByItemQuery,
   useGetShipsByLocationQuery,
