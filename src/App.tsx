@@ -2,20 +2,23 @@ import { ThemeProvider } from '@/components/provider/ThemeProvider';
 import { ModeToggle } from '@/components/ui/ThemeToggle';
 import { SearchInput } from '@/modules/items/SearchInput';
 import { SelectInput } from '@/modules/items/SelectInput';
-import csvDownload from '@/assets/svg/csv-download.svg';
 import { DataTable } from '@/modules/dataTable/Table';
 import { columns } from '@/modules/dataTable/Columns';
 import { useGetAllShipsQuery, useSearchShipsQuery } from '@/store/api/shipsApi';
+import { useGetVendorsQuery } from '@/store/api/vendorApi';
 import { Toaster } from '@/components/ui/Sonner';
 import { useAppSelector } from '@/store/hooks';
 import { selectSelectedRows } from '@/store/slices/selectedShipSlice';
 import { SelectedRows } from '@/modules/items/SelectedRows';
 import { useState, useEffect } from 'react';
+import { Export } from '@/modules/dataTable/Export';
 import './App.css';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [selectedVendor, setSelectedVendor] = useState<number | null>(null);
+  const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
   const selectedRows = useAppSelector(selectSelectedRows);
 
   useEffect(() => {
@@ -30,11 +33,26 @@ function App() {
     skip: !debouncedQuery,
   });
 
-  const { data: allShips, isLoading: isLoadingAll, error } = useGetAllShipsQuery(undefined, {
+  const { data: allShips, isLoading: isLoadingAll, error: errorShips } = useGetAllShipsQuery(undefined, {
     skip: !!debouncedQuery,
   });
 
-  const ships = (debouncedQuery ? searchResults : allShips) || [];
+  const { data: allVendors } = useGetVendorsQuery();
+
+  const vendors = allVendors?.map((vendor) => ({
+    value: vendor.id,
+    name: vendor.name,
+  }));
+
+  const allShipsData = (debouncedQuery ? searchResults : allShips) || [];
+  
+  // Apply vendor and phase filters
+  const ships = allShipsData.filter((ship) => {
+    const matchesVendor = selectedVendor === null || ship.vendorId === selectedVendor;
+    const matchesPhase = selectedPhase === null || ship.phase === selectedPhase;
+    return matchesVendor && matchesPhase;
+  });
+
   const isLoading = debouncedQuery ? isSearching : isLoadingAll;
 
   const phase = Array.from({ length: 99 }, (_, i) => ({
@@ -52,7 +70,7 @@ function App() {
     );
   }
 
-  if (error) {
+  if (errorShips) {
     return (
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <div className="flex items-center justify-center h-screen">
@@ -61,19 +79,6 @@ function App() {
       </ThemeProvider>
     );
   }
-
-  const vendor = [
-    { value: 1, name: 'ABC Supplies Co.' },
-    { value: 2, name: 'XYZ Supplies Co.' },
-    { value: 3, name: '123 Supplies Co.' },
-    { value: 4, name: '456 Supplies Co.' },
-    { value: 5, name: '789 Supplies Co.' },
-    { value: 6, name: '101 Supplies Co.' },
-    { value: 7, name: '102 Supplies Co.' },
-    { value: 8, name: '103 Supplies Co.' },
-    { value: 9, name: '104 Supplies Co.' },
-    { value: 10, name: '105 Supplies Co.' }
-  ]
 
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
@@ -88,9 +93,19 @@ function App() {
             value={searchQuery}
             onChange={setSearchQuery}
           />
-          <SelectInput values={phase} label="Phase" setValue={() => {}} />
-          <SelectInput values={vendor} label="Vendor" setValue={() => {}} />
-          <img src={csvDownload} className='cursor-pointer' alt="csv-download" />
+          <SelectInput 
+            values={phase} 
+            label="Phase" 
+            setValue={(value) => setSelectedPhase(value ? Number(value) : null)} 
+          />
+          {vendors && (
+            <SelectInput 
+              values={vendors} 
+              label="Vendor" 
+              setValue={(value) => setSelectedVendor(value ? Number(value) : null)} 
+            />
+          )}
+          <Export ships={ships} />
         </div>
           {selectedRows.length > 0 && ( <SelectedRows selectedRows={selectedRows} /> )}
         <div className='w-full flex flex-col items-start justify-start'>
