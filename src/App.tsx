@@ -48,8 +48,6 @@ function App() {
   
   // Apply vendor and phase filters
   const ships = allShipsData.filter((ship) => {
-    console.log(ship);
-    console.log(selectedPhase);
     const matchesVendor = selectedVendor === null || ship.vendorId == selectedVendor;
     const matchesPhase = selectedPhase === null || ship.phase == selectedPhase;
     return matchesVendor && matchesPhase;
