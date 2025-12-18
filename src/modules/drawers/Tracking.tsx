@@ -24,7 +24,7 @@ export function Tracking() {
 
   if (!selectedRows.length) return null;
   
-  const ids: number[] = selectedRows.map((row: IShip) => row.id);
+  const ids: number[] = selectedRows.map((row: IShip) => parseInt(row.id.toString()));
 
   const handleBulkUpdate = async () => {
     try {
